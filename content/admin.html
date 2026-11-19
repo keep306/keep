@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="color-scheme" content="light">
+  <title>管理工作台 · 众诚合</title>
+  <link rel="icon" type="image/png" href="/assets/zhongchenghe-icon-v1.png">
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/admin.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳至主要内容</a>
+  <section class="access-screen" id="access-screen" aria-labelledby="access-title">
+    <div class="access-card">
+      <a class="wordmark" href="/" aria-label="返回众诚合网站"><img src="/assets/zhongchenghe-logo-v1.png" alt="" class="brand-mark" width="44" height="50"><span class="workspace-brand-copy"><span class="workspace-brand-name">众诚合</span><span class="workspace-brand-latin">ZHONGCHENGHE</span></span></a>
+      <p class="eyebrow">WORKSPACE / 管理工作台</p>
+      <h1 id="access-title">正在验证访问权限</h1>
+      <p id="access-message" role="status">请稍候，正在检查管理员登录状态。</p>
+      <a id="signin-link" class="button button-dark" href="/signin-with-chatgpt?return_to=/admin" target="_top" hidden>使用 ChatGPT 登录 <span aria-hidden="true">↗</span></a>
+      <button id="access-retry" class="button button-dark" type="button" hidden>重新检查</button>
+      <a id="access-signout" class="text-link" href="/signout-with-chatgpt?return_to=/admin" target="_top" hidden>退出当前账号</a>
+      <a class="text-link return-link" href="/">返回产品展厅 <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
+  <div id="admin-app" class="admin-app" hidden>
+    <aside class="sidebar" aria-label="工作台导航">
+      <a class="wordmark sidebar-brand" href="/" aria-label="返回众诚合网站"><img src="/assets/zhongchenghe-logo-v1.png" alt="" class="brand-mark" width="44" height="50"><span class="workspace-brand-copy"><span class="workspace-brand-name" id="sidebar-brand">众诚合</span><span class="workspace-brand-latin">ZHONGCHENGHE</span></span></a>
+      <div class="sidebar-label">管理工作台</div>
+      <nav class="main-nav" aria-label="管理功能">
+        <button class="nav-item is-active" type="button" data-panel="overview" aria-current="page"><span class="nav-index">01</span><span>工作概览</span></button>
+        <button class="nav-item" type="button" data-panel="inquiries"><span class="nav-index">02</span><span>商务询盘</span><span id="nav-new-count" class="nav-count" hidden>0</span></button>
+        <button class="nav-item" type="button" data-panel="products"><span class="nav-index">03</span><span>产品系列</span></button>
+        <button class="nav-item" type="button" data-panel="swatches"><span class="nav-index">04</span><span>SPC 花色</span></button>
+        <button class="nav-item" type="button" data-panel="settings"><span class="nav-index">05</span><span>站点设置</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <a class="preview-link" href="/" target="_blank" rel="noopener">查看产品展厅 <span aria-hidden="true">↗</span></a>
+        <div class="account"><span class="account-dot" aria-hidden="true"></span><div><strong id="user-name">管理员</strong><span id="user-email"></span></div></div>
+        <a class="signout-link" href="/signout-with-chatgpt?return_to=/admin" target="_top">退出登录</a>
+      </div>
+    </aside>
+
+    <main id="main-content" class="main-content" tabindex="-1">
+      <header class="workspace-header"><p>ZHONGCHENGHE <span>/</span> WORKSPACE</p><a class="mobile-signout" href="/signout-with-chatgpt?return_to=/admin" target="_top">退出登录</a><button id="refresh-button" class="button button-quiet" type="button"><span aria-hidden="true">↻</span> 刷新数据</button></header>
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden><span id="notice-text"></span><button id="notice-close" type="button" aria-label="关闭提示">×</button></div>
+
+      <section id="panel-overview" class="panel" aria-labelledby="overview-title">
+        <div class="panel-heading"><div><p class="eyebrow">AT A GLANCE</p><h1 id="overview-title" tabindex="-1">网站管理概览</h1><p class="subheading">查看询盘进度，更新产品与联系方式。</p></div><span class="status-indicator"><i aria-hidden="true"></i> 管理员已登录</span></div>
+        <div id="overview-stats" class="stats-grid" aria-label="询盘统计"></div>
+        <div class="overview-grid">
+          <article class="overview-card overview-inquiries"><span class="card-number">01 / CONNECTIONS</span><h2>商务询盘管理</h2><p>查看客户的项目需求与选样清单，记录处理进度，让每次沟通都有迹可循。</p><button type="button" class="button button-dark" data-open-panel="inquiries">管理商务询盘 <span aria-hidden="true">↗</span></button></article>
+          <article class="overview-card"><span class="card-number">02 / COLLECTIONS</span><h2>产品与花色</h2><div id="catalog-summary" class="catalog-summary"><p>正在读取产品内容…</p></div><div class="inline-actions"><button type="button" class="text-button" data-open-panel="products">管理产品 <span aria-hidden="true">↗</span></button><button type="button" class="text-button" data-open-panel="swatches">管理花色 <span aria-hidden="true">↗</span></button></div></article>
+        </div>
+        <p class="page-footnote">询盘保存在管理工作台中。提交和处理询盘不会自动发送邮件。</p>
+      </section>
+
+      <section id="panel-inquiries" class="panel" aria-labelledby="inquiries-title" hidden>
+        <div class="panel-heading"><div><p class="eyebrow">CONNECTIONS</p><h1 id="inquiries-title" tabindex="-1">商务询盘</h1><p class="subheading">了解项目，跟进需求，记录每一步进展。</p></div><button id="export-button" class="button button-outline" type="button">导出当前筛选 CSV <span aria-hidden="true">↓</span></button></div>
+        <form id="inquiry-filters" class="filter-bar" role="search"><label class="search-field"><span class="sr-only">搜索询盘</span><span aria-hidden="true">⌕</span><input id="inquiry-search" type="search" placeholder="搜索姓名、邮箱、公司或需求" maxlength="120" autocomplete="off"></label><label class="filter-select"><span>处理状态</span><select id="inquiry-status"><option value="all">全部状态</option><option value="new">待处理</option><option value="read">已查看</option><option value="replied">已回复</option><option value="archived">已归档</option></select></label><button class="button button-dark" type="submit">搜索</button><button id="inquiry-reset" class="text-button" type="button" hidden>清除筛选</button></form>
+        <div class="table-card"><div class="table-heading"><p id="inquiry-summary" role="status">正在读取询盘…</p><span>最新提交优先</span></div><div class="table-scroll" tabindex="0" role="region" aria-label="商务询盘列表，可横向滚动"><table class="inquiry-table"><thead><tr><th scope="col">客户 / 公司</th><th scope="col">项目需求</th><th scope="col">选样</th><th scope="col">状态</th><th scope="col">提交时间</th><th scope="col"><span class="sr-only">操作</span></th></tr></thead><tbody id="inquiry-rows"></tbody></table></div><div id="inquiry-empty" class="empty-state" hidden></div><div class="pagination"><span id="page-label">第 1 页</span><div><button id="previous-page" type="button" class="button button-quiet" disabled>← 上一页</button><button id="next-page" type="button" class="button button-quiet" disabled>下一页 →</button></div></div></div>
+        <p class="page-footnote">CSV 包含当前搜索与状态筛选的结果，每次最多 10,000 条。导出文件包含客户联系方式，请妥善保存。</p>
+      </section>
+
+      <section id="panel-products" class="panel" aria-labelledby="products-title" hidden>
+        <div class="panel-heading"><div><p class="eyebrow">PRODUCT COLLECTIONS</p><h1 id="products-title" tabindex="-1">产品系列</h1><p class="subheading">编辑已有系列的名称、介绍和展示顺序。</p></div><span id="product-count" class="count-label"></span></div>
+        <div id="product-list" class="product-grid"></div>
+      </section>
+
+      <section id="panel-swatches" class="panel" aria-labelledby="swatches-title" hidden>
+        <div class="panel-heading"><div><p class="eyebrow">SPC FINISH LIBRARY</p><h1 id="swatches-title" tabindex="-1">SPC 饰面花色</h1><p class="subheading">本花色库对应 SPC 石晶墙板，来源为产品画册第 1–11 页。</p></div><span id="swatch-count" class="count-label"></span></div>
+        <div class="filter-bar"><label class="search-field"><span class="sr-only">搜索花色名称或编号</span><span aria-hidden="true">⌕</span><input id="swatch-search" type="search" placeholder="搜索花色名称或编号" maxlength="120" autocomplete="off"></label><label class="filter-select"><span>花色分类</span><select id="swatch-category"><option value="all">全部分类</option><option value="wood">木纹</option><option value="stone">石纹</option><option value="fabric">布纹</option><option value="solid">纯色</option></select></label><label class="filter-select"><span>展示状态</span><select id="swatch-visibility"><option value="all">全部</option><option value="visible">展示中</option><option value="hidden">已隐藏</option></select></label></div>
+        <div id="swatch-list" class="swatch-grid"></div>
+      </section>
+
+      <section id="panel-settings" class="panel" aria-labelledby="settings-title" hidden>
+        <div class="panel-heading"><div><p class="eyebrow">BRAND & CONTACT</p><h1 id="settings-title" tabindex="-1">站点设置</h1><p class="subheading">维护品牌与首页文案，以及公开的联系方式。</p></div></div>
+        <form id="settings-form" class="settings-form"><fieldset id="settings-fields" disabled>
+          <section class="settings-section"><div class="section-intro"><span class="card-number">01 / BRAND</span><h2>品牌与首页</h2><p>保存后，将用于产品展厅的品牌与首屏内容。</p></div><div class="fields"><label>品牌名称<input name="brandName" required maxlength="80" autocomplete="organization"></label><label>首页主标题<input name="heroTitle" required maxlength="120"></label><label>首页副标题<textarea name="heroSubtitle" rows="3" required maxlength="300"></textarea></label></div></section>
+          <section class="settings-section"><div class="section-intro"><span class="card-number">02 / CONTACT</span><h2>联系与社交媒体</h2><p>所有联系方式都可以留空。社交媒体请填写完整的 HTTPS 主页链接。</p></div><div class="fields"><label>商务邮箱 <span class="optional">选填</span><input name="email" type="email" maxlength="254" placeholder="尚未设置" autocomplete="email"></label><label>Instagram <span class="optional">选填</span><input name="instagram" type="url" maxlength="500" placeholder="https://www.instagram.com/…"></label><label>Facebook <span class="optional">选填</span><input name="facebook" type="url" maxlength="500" placeholder="https://www.facebook.com/…"></label><label>TikTok <span class="optional">选填</span><input name="tiktok" type="url" maxlength="500" placeholder="https://www.tiktok.com/@…"></label><label>WhatsApp <span class="optional">选填</span><input name="whatsapp" type="url" maxlength="500" placeholder="https://wa.me/…"></label></div></section>
+          <div id="settings-error" class="form-error" role="alert" hidden></div><div class="settings-footer"><span id="settings-save-note">仅在点击保存后更新公开内容。</span><button id="settings-save" class="button button-dark" type="submit">保存站点设置 <span aria-hidden="true">↗</span></button></div>
+        </fieldset></form>
+      </section>
+      <footer class="workspace-footer"><span>ZHONGCHENGHE</span><span>产品展示与商务询盘管理</span></footer>
+    </main>
+  </div>
+
+  <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title"><div id="editor-content"></div></dialog>
+  <noscript><div class="noscript-message">管理工作台需要启用 JavaScript。请在浏览器中开启后刷新。</div></noscript>
+</body>
+</html>

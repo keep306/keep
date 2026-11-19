@@ -1,0 +1,148 @@
+[
+  {
+    "file": "/assets/material-spc-stack.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 5,
+    "description": "SPC石晶墙板叠层实物",
+    "category": "spc",
+    "cropAt1800px": [
+      174,
+      310,
+      914,
+      1335
+    ],
+    "width": 904,
+    "height": 1253,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-carbon-samples.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 13,
+    "description": "碳晶板木纹扇形样板",
+    "category": "carbon",
+    "cropAt1800px": [
+      150,
+      300,
+      900,
+      1230
+    ],
+    "width": 917,
+    "height": 1136,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-grille-samples.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 32,
+    "description": "155对扣格栅板多饰面叠层",
+    "category": "grille",
+    "cropAt1800px": [
+      175,
+      286,
+      553,
+      754
+    ],
+    "width": 462,
+    "height": 572,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-acoustic-detail.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 40,
+    "description": "聚酯纤维吸音板木条近景",
+    "category": "art",
+    "cropAt1800px": [
+      177,
+      315,
+      765,
+      528
+    ],
+    "width": 719,
+    "height": 260,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-acoustic-sample.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 41,
+    "description": "吸音板PVC木纹膜胡桃木样块",
+    "category": "art",
+    "cropAt1800px": [
+      1195,
+      425,
+      1490,
+      730
+    ],
+    "width": 360,
+    "height": 373,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-grille-range.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 32,
+    "description": "十种饰面格栅产品样块",
+    "category": "grille",
+    "cropAt1800px": [
+      175,
+      1129,
+      1624,
+      1702
+    ],
+    "width": 1771,
+    "height": 700,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-outdoor-profile.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 49,
+    "description": "219户外墙板截面样块",
+    "category": "outdoor",
+    "cropAt1800px": [
+      175,
+      313,
+      882,
+      782
+    ],
+    "width": 864,
+    "height": 573,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-softstone-sample.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 64,
+    "description": "软石系列毛面花岗岩弯曲样板",
+    "category": "softstone",
+    "sourceProductCode": "DD1104",
+    "cropAt1800px": [
+      145,
+      1130,
+      1016,
+      1511
+    ],
+    "width": 1063,
+    "height": 465,
+    "containsRoomScene": false
+  },
+  {
+    "file": "/assets/material-softstone-texture.jpg",
+    "sourceDocument": "/documents/product-catalog.pdf",
+    "page": 68,
+    "description": "软石系列洞石样板纹理与边缘特写",
+    "category": "softstone",
+    "sourceProductCode": "DD1108",
+    "cropAt1800px": [
+      134,
+      1131,
+      1007,
+      1511
+    ],
+    "width": 1067,
+    "height": 463,
+    "containsRoomScene": false
+  }
+]

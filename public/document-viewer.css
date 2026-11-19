@@ -1,0 +1,41 @@
+html.document-reader-open{overflow:hidden}
+.document-reader{--reader-ink:#1e2325;--reader-paper:#f4f3ef;position:fixed;inset:0;box-sizing:border-box;width:min(1440px,calc(100vw - 48px));height:calc(100dvh - 40px);max-width:none;max-height:none;margin:auto;padding:0;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:var(--reader-ink);background:var(--reader-paper);box-shadow:0 28px 120px #0007;overflow:hidden;font-family:inherit}
+.document-reader[open]{display:flex;flex-direction:column}
+.document-reader::backdrop{background:rgba(12,17,18,.82);backdrop-filter:blur(8px)}
+.document-reader *{box-sizing:border-box}
+.document-reader [hidden]{display:none!important}
+.document-reader__header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 28px;background:#182123;color:#fff;flex:none}
+.document-reader__heading{min-width:0}
+.document-reader__eyebrow{margin:0 0 8px;font-size:9px;font-weight:500;letter-spacing:.17em;color:#b7c2bf}
+.document-reader__title{margin:0;font-size:clamp(16px,1.5vw,22px);line-height:1.4;font-weight:500;letter-spacing:.01em}
+.document-reader__header-actions{display:flex;align-items:center;gap:24px;flex:none}
+.document-reader__download{color:#e7eee9!important;text-decoration:none!important;font-size:12px;white-space:nowrap;border-bottom:1px solid #7d9286;padding:8px 0;line-height:1.5}
+.document-reader__download:hover{color:#fff!important;border-color:#fff}
+.document-reader__button{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:36px;height:36px;padding:0 12px;border:1px solid #d5d6d1;border-radius:4px;background:transparent;color:inherit;font-family:inherit;font-size:13px;font-weight:400;line-height:1;cursor:pointer;transition:background .15s,border-color .15s}
+.document-reader__button:hover:not(:disabled){background:#e2e6df;border-color:#a0aca3}
+.document-reader__button:disabled{cursor:default;opacity:.35}
+.document-reader__button:focus-visible,.document-reader__download:focus-visible,.document-reader__page-input:focus-visible,.document-reader__stage:focus-visible{outline:2px solid #728b50;outline-offset:3px}
+.document-reader__close{min-width:40px;height:40px;font-size:28px;border-color:#52605b;color:#fff;padding:0;font-weight:200}
+.document-reader__close:hover:not(:disabled){background:#32403b;border-color:#a0b0a5}
+.document-reader__toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px;border-bottom:1px solid #d9dcd5;background:#fafaf7;flex:none}
+.document-reader__pages,.document-reader__zoom-controls{display:flex;align-items:center;gap:8px;margin:0}
+.document-reader__page-label{display:flex;align-items:center;gap:8px;font-size:12px;color:#68706b;margin:0}
+.document-reader__page-input{width:52px;height:34px;padding:0 5px;border:1px solid #d5d6d1;border-radius:3px;color:#1e2325;background:white;font:inherit;font-size:13px;text-align:center;appearance:textfield}
+.document-reader__page-input::-webkit-inner-spin-button,.document-reader__page-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.document-reader__page-total{font-size:12px;white-space:nowrap;color:#68706b;min-width:42px}
+.document-reader__go{font-size:11px}
+.document-reader__zoom-controls .document-reader__button[aria-pressed=true]{border-color:#8e9d83;background:#e9ede2}
+.document-reader__zoom-value{min-width:36px;text-align:center;font-size:11px;font-variant-numeric:tabular-nums;color:#667063}
+.document-reader__stage{position:relative;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;background:#e3e5df;scrollbar-width:thin;touch-action:pan-x pan-y}
+.document-reader__figure{display:flex;align-items:center;justify-content:center;min-width:100%;min-height:100%;width:max-content;padding:16px;margin:0}
+.document-reader__image{display:block;flex:none;max-width:none!important;max-height:none!important;object-fit:contain;background:#fff;box-shadow:0 4px 24px #28352820;user-select:none}
+.document-reader__message{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;background:#e3e5df;color:#56614e}
+.document-reader__message-text{margin:0;font-size:14px;line-height:1.8}
+.document-reader__message:not(.is-error)::before{content:'';width:24px;height:24px;border:2px solid #c5cebe;border-top-color:#60734e;border-radius:50%;animation:document-reader-spin .8s linear infinite}
+.document-reader__retry{background:#fff}
+.document-reader__footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 28px;border-top:1px solid #d5d8d0;background:#fafaf7;flex:none;font-size:10px;line-height:1.5;letter-spacing:.03em;color:#73806c}
+.document-reader__keyboard-hint{white-space:nowrap;color:#8a9484}
+@keyframes document-reader-spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.document-reader{inset:0;width:100%;height:100dvh;margin:0;border:0;border-radius:0}.document-reader__header{padding:18px 16px;gap:10px}.document-reader__eyebrow{font-size:8px;margin-bottom:6px;letter-spacing:.12em}.document-reader__title{font-size:15px}.document-reader__header-actions{gap:12px}.document-reader__download{font-size:10px;max-width:76px;white-space:normal;text-align:center}.document-reader__close{min-width:34px;height:36px}.document-reader__toolbar{flex-wrap:wrap;padding:10px 12px;gap:9px;justify-content:center}.document-reader__pages{justify-content:center;flex:1}.document-reader__zoom-controls{justify-content:center;flex:1 0 100%;flex-wrap:wrap}.document-reader__button{min-width:34px;height:34px;padding:0 9px;font-size:12px}.document-reader__page-label,.document-reader__page-total{font-size:11px}.document-reader__page-input{height:32px;width:43px}.document-reader__page-total{min-width:38px}.document-reader__footer{padding:10px 14px;font-size:9px}.document-reader__keyboard-hint{display:none}}
+@media(max-width:400px){.document-reader__toolbar{gap:7px}.document-reader__pages,.document-reader__zoom-controls{gap:6px}.document-reader__go{padding:0 7px}.document-reader__zoom-controls{flex-basis:100%}.document-reader__header-actions{gap:8px}}
+@media(prefers-reduced-motion:reduce){.document-reader__button{transition:none}.document-reader__message:not(.is-error)::before{animation:none}}
