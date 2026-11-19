@@ -27,11 +27,11 @@
   dialog.setAttribute('aria-labelledby', 'document-reader-title');
   const header = el('header', 'document-reader__header');
   const heading = el('div', 'document-reader__heading');
-  heading.append(el('p', 'document-reader__eyebrow', '资料阅览 / DOCUMENTS'));
+  heading.append(el('p', 'document-reader__eyebrow', '资料阅读器'));
   const title = el('h2', 'document-reader__title', '产品资料');
   title.id = 'document-reader-title';
   heading.append(title);
-  const download = el('a', 'document-reader__download', '下载原 PDF ↓');
+  const download = el('a', 'document-reader__download', '查看原版 PDF');
   download.download = '';
   download.hidden = true;
   const close = button('×', '关闭资料阅读器', 'document-reader__close');
@@ -289,7 +289,7 @@
 
   document.addEventListener('click', event => {
     const trigger = event.target instanceof Element ? event.target.closest('[data-document]') : null;
-    if (!trigger || trigger.closest('#document-reader')) return;
+    if (!trigger || trigger.closest('#document-reader') || typeof dialog.showModal !== 'function') return;
     event.preventDefault();
     const id = trigger.getAttribute('data-document') || '';
     void openDocument(id, trigger.getAttribute('data-document-page') || 1, trigger);

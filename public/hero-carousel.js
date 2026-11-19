@@ -17,13 +17,17 @@
   let busy = false;
   let onScreen = true;
   let pageActive = true;
+  let hasFocus = false;
+  let hoveringLink = false;
+  let displayedIndex = -1;
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   root.classList.add('is-enhanced');
   function stopTimer() {
     if (timer !== null) { clearTimeout(timer); timer = null; }
   }
   function canRotate() {
-    return pageActive && !document.hidden && onScreen;
+    return pageActive && !document.hidden && onScreen && !hasFocus && !hoveringLink && (!motion.matches || displayedIndex < 0);
   }
   function schedule() {
     stopTimer();
@@ -81,6 +85,7 @@
     return promise;
   }
   function showSlide(index, result) {
+    displayedIndex = index;
     const active = slides[index];
     const image = active.querySelector('img');
     image.src = result.src;
@@ -90,8 +95,16 @@
       slide.classList.toggle('is-active', i === index);
       slide.setAttribute('aria-hidden', String(i !== index));
     });
+    root.dataset.feature = active.dataset.feature;
     series.textContent = t(active.dataset.heroTitle);
     seriesLink.href = active.dataset.heroLink;
+    if (active.dataset.heroDocument) {
+      seriesLink.dataset.document = active.dataset.heroDocument;
+      seriesLink.dataset.documentPage = active.dataset.heroPage;
+    } else {
+      delete seriesLink.dataset.document;
+      delete seriesLink.dataset.documentPage;
+    }
     seriesLink.setAttribute('aria-label', t(`查看${active.dataset.heroTitle}产品系列`));
     caption.textContent = t(result.fallback ? '产品画册样图 · 颜色与质感以实物为准' : '产品展示图 · 基于画册样图制作');
   }
@@ -110,7 +123,7 @@
         if (!result) continue;
         showSlide(target, result);
         // Warm one upcoming image without changing the visible slide.
-        void loadSlide(nextIndex);
+        if (!motion.matches) void loadSlide(nextIndex);
         return;
       }
     } catch {
@@ -122,6 +135,16 @@
   }
 
   document.addEventListener('visibilitychange', schedule);
+  root.addEventListener('focusin', () => { hasFocus = true; stopTimer(); });
+  root.addEventListener('focusout', event => {
+    hasFocus = root.contains(event.relatedTarget);
+    schedule();
+  });
+  seriesLink.addEventListener('pointerenter', event => {
+    if (event.pointerType === 'mouse') { hoveringLink = true; stopTimer(); }
+  });
+  seriesLink.addEventListener('pointerleave', () => { hoveringLink = false; schedule(); });
+  motion.addEventListener('change', schedule);
   window.addEventListener('pagehide', () => { pageActive = false; stopTimer(); });
   window.addEventListener('pageshow', () => { pageActive = true; schedule(); });
   if ('IntersectionObserver' in window) {

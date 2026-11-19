@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'acorn';
@@ -44,8 +45,6 @@ for(const name of ['app.js','document-viewer.js','hero-carousel.js']){
     const start=source.indexOf("  const fieldNames=['name'"),end=source.indexOf("  const menu=$('.menu-toggle')");
     if(start<0||end<start)throw new Error('Inquiry block not found');
     source=source.slice(0,start)+source.slice(end);
-    source=source.replace("  function updateSelection(){\n    const chosen=selectedSwatches();","  function updateSelection(){\n    const chosen=selectedSwatches();window.dispatchEvent(new CustomEvent('soya:selectionchange'));");
-    source=source.replace('  renderProducts();renderProductPreviews();renderSwatches();updateSelection();loadCatalog();',"  window.SoyaGetSelectedFinishes=()=>selectedSwatches().map(({id,name,code})=>({id,name,code}));\n  renderProducts();renderProductPreviews();renderSwatches();updateSelection();loadCatalog();");
     source=source.replaceAll('未选择花色，可直接提交咨询。','未选择花色，可直接咨询产品。');
   }
   await fs.writeFile(path.join(out,name),relocateScript(source));
@@ -60,7 +59,18 @@ catalog.products=catalog.products.filter(x=>x.visible!==false);catalog.swatches=
 await fs.writeFile(path.join(out,'catalog.json'),JSON.stringify(catalog));
 for(const file of ['whatsapp.js','whatsapp.css'])await fs.copyFile(path.join(root,'pages',file),path.join(out,file));
 
-const composer=`<section class="whatsapp-composer" data-whatsapp-composer data-whatsapp-url="${catalog.settings.socials.whatsapp}" aria-labelledby="whatsapp-title"><p class="eyebrow" data-i18n="WhatsApp 商务咨询">WHATSAPP ENQUIRIES</p><h3 id="whatsapp-title" data-i18n="说明您的需求">Tell us what you need</h3><label for="whatsapp-note" data-i18n="产品或样品需求（选填）">Product or sample requirements (optional)</label><textarea id="whatsapp-note" rows="5" maxlength="1500" placeholder="For example: product collection, finishes, estimated quantity and destination country." data-i18n-placeholder="例如：产品系列、花色、预计数量和收货国家。" aria-describedby="whatsapp-help"></textarea><span id="whatsapp-note-count" class="whatsapp-count">0 / 1500</span><a id="whatsapp-send" class="button button-dark whatsapp-send" href="${catalog.settings.socials.whatsapp}" target="_blank" rel="noopener noreferrer" data-i18n="通过 WhatsApp 咨询">Enquire on WhatsApp</a><p id="whatsapp-help" class="whatsapp-help" data-i18n="选样与说明将带入 WhatsApp，发送前可继续编辑。">Your selected finishes and notes open in WhatsApp, where you can edit them before sending.</p></section>`;
+const whatsapp = new URL(catalog.settings.socials.whatsapp);
+if (whatsapp.protocol !== 'https:' || whatsapp.hostname !== 'wa.me' || !/^\/\d+$/.test(whatsapp.pathname)) {
+  throw new Error('A valid WhatsApp business number is required for the public site');
+}
+const composer = (await fs.readFile(path.join(root, 'pages/enquiry.html'), 'utf8'))
+  .replaceAll('{{whatsapp}}', whatsapp.origin + whatsapp.pathname);
+const versions = new Map();
+for (const filename of await fs.readdir(out)) {
+  if (!/\.(js|css)$/.test(filename)) continue;
+  const bytes = await fs.readFile(path.join(out, filename));
+  versions.set(filename, createHash('sha256').update(bytes).digest('hex').slice(0, 12));
+}
 const replacements=[
  ['填写所需产品、规格、预计用量或样板需求，并留下联系邮箱，便于进一步确认。','选择感兴趣的花色，或简单描述所需产品与数量，通过 WhatsApp 与我们确认。'],
  ['Tell us the products, specifications, estimated quantity or samples you need, and leave your email so we can follow up.','Choose finishes or describe the products and quantities you need, then contact us on WhatsApp.'],
@@ -73,17 +83,23 @@ const replacements=[
 for(const name of ['home','products','finishes','spaces','quality']){
   let html=await fs.readFile(path.join(root,'content',name+'.html'),'utf8');
   if(name==='home'){
-    html=html.replace(/<form id="inquiry-form"[\s\S]*?<\/form>/,composer);
-    const begin=html.indexOf('<div id="inquiry-success"'),end=html.indexOf('</section></main>',begin);
-    if(begin<0||end<begin)throw new Error('Inquiry success block not found');
-    html=html.slice(0,begin)+'</div>'+html.slice(end);
+    const enquirySlot = /<!-- enquiry-content:start -->[\s\S]*?<!-- enquiry-content:end -->/;
+    if (!enquirySlot.test(html)) throw new Error('Enquiry slot missing from homepage');
+    html=html.replace(enquirySlot,composer);
+    html=html.replace(/<p\b[^>]*id="privacy-note"[^>]*>[\s\S]*?<\/p>/,'');
+
   }
   for(const [before,after] of replacements)html=html.replaceAll(before,after);
   html=html.replace(/<a\b[^>]*href="\/admin"[^>]*>[\s\S]*?<\/a>/g,'');
-  html=html.replace('</head>','<link rel="stylesheet" href="/whatsapp.css"><script src="/whatsapp.js" defer></script></head>');
+  if(name==='home')html=html.replace('</head>','<link rel="stylesheet" href="/whatsapp.css"><script src="/whatsapp.js" defer></script></head>');
   html=html.replace(/\b(href|src|data-hero-src|data-hero-fallback|data-hero-link)="(\/(?!\/)[^"]*)"/g,(_,attribute,value)=>attribute+'="'+(value.startsWith('/whatsapp.')?base+value:relocate(value))+'"');
   // Other root-level stylesheet/script paths are also local to the project site.
   html=html.replace(/\b(href|src)="(\/(?!\/)[^"]*)"/g,(match,attribute,value)=>value.startsWith(base+'/')?match:attribute+'="'+base+value+'"');
+  // Version each referenced public script and stylesheet so Pages clients load a matching release.
+  html=html.replace(/\b(href|src)="([^"]+\.(?:js|css))"/g,(match,attribute,url)=>{
+    const version=versions.get(url.split('/').pop());
+    return version ? attribute+'="'+url+'?v='+version+'"' : match;
+  });
   const dir=name==='home'?out:path.join(out,name);await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'index.html'),html);
 }
 await fs.writeFile(path.join(out,'.nojekyll'),'');

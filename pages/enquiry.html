@@ -1,0 +1,11 @@
+<section class="whatsapp-composer" data-whatsapp-composer data-whatsapp-url="{{whatsapp}}" aria-labelledby="inquiry-title">
+  <div id="whatsapp-product-row" class="enquiry-product" hidden>
+    <div><small data-i18n="询价产品">Selected panel</small><strong id="whatsapp-product"></strong></div>
+    <button id="whatsapp-remove-product" type="button" aria-label="Remove selected panel" data-i18n-aria-label="取消所选产品">×</button>
+  </div>
+  <label for="whatsapp-note" data-i18n="项目说明（选填）">Project details (optional)</label>
+  <textarea id="whatsapp-note" rows="4" maxlength="1500" aria-describedby="whatsapp-help" data-i18n-placeholder="例如：需要 300 平方米木纹墙板，寄往迪拜。希望先看样板。" placeholder="For example, I need 300 m² of wood-finish panels for delivery to Dubai. Could you send samples?"></textarea>
+  <div class="whatsapp-field-footer"><span id="whatsapp-note-count">0 / 1500</span></div>
+  <a id="whatsapp-send" class="button button-dark" href="{{whatsapp}}" target="_blank" rel="noopener noreferrer" data-i18n="打开 WhatsApp">Open WhatsApp</a>
+  <p id="whatsapp-help" data-i18n="选样和说明会带入对话，您可以在 WhatsApp 中确认后发送。">Your selection and notes will open in WhatsApp for you to review and send.</p>
+</section>
