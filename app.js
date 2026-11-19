@@ -10,10 +10,30 @@
     grille:{title:'格栅与集成墙板',kicker:'LINES, TEXTURE & RHYTHM',image:'assets/grille-living.jpg',alt:'竹木纤维格栅板在客厅背景墙的应用展示',description:'包含竹木纤维格栅板与集成墙板，可搭配用于室内墙面和背景墙。板型及安装方式见产品画册。',details:[['产品系列','竹木纤维格栅板'],['搭配系列','竹木纤维集成墙板'],['更多资料','产品画册第 31–38 页']],action:'documents/product-catalog.pdf#page=32',actionLabel:'查看格栅与墙板系列'},
     art:{title:'艺术装饰吸音板',kicker:'DESIGNED TO BE FELT',image:'assets/acoustic-chair.jpg',alt:'木色条状艺术装饰吸音板与橙色休闲椅',description:'条状木色饰面的艺术装饰吸音板。外形、结构与规格见对应画册页面。',details:[['产品系列','艺术装饰吸音板'],['设计语言','线条 / 木色 / 层次'],['更多资料','产品画册第 39–47 页']],action:'documents/product-catalog.pdf#page=39',actionLabel:'查看艺术饰面系列'}
   };
+  const samples = {
+    spc: {studio:'assets/studio-spc-v2.webp', image:'assets/material-spc-stack.jpg', alt:'SPC 石晶墙板叠层与板材边缘细节', detail:'板材截面与芯材', tab:'SPC 墙板'},
+    carbon: {studio:'assets/studio-carbon-v2.webp', image:'assets/material-carbon-samples.jpg', alt:'木纹碳晶板扇形样板，展示饰面与基材', detail:'木纹饰面样板', tab:'碳晶板材'},
+    grille: {studio:'assets/studio-grille-v2.webp', image:'assets/material-grille-samples.jpg', alt:'多种木色格栅样块与凹凸截面', detail:'格栅截面', tab:'格栅与墙板系列'},
+    art: {image:'assets/material-acoustic-sample.jpg', alt:'艺术装饰吸音板样块，展示木条与黑色底板结构', detail:'木色条状饰面', tab:'吸音板'}
+  };
   const STORAGE_KEY = 'soya-selected-finishes-v1';
   let products=Object.entries(fallbackProducts).map(([id,item])=>({id,...item}));
   let swatches=(window.SWATCHES||[]).map(item=>({...item,id:item.id||item.image.split('/').pop().replace(/\.[^.]+$/,'')}));
-  let activeProduct=new URLSearchParams(location.search).get('series')||products[0]?.id,activeFilter='all';
+  const queryValue = key => new URL(location.href).searchParams.get(key);
+  const textureFromUrl = () => {
+    const value = queryValue('texture');
+    return Object.hasOwn(categories, value) ? value : 'all';
+  };
+  let activeProduct = queryValue('series') || products[0]?.id;
+  let activeFilter = textureFromUrl();
+  let productView = 'sample';
+
+  function rememberChoice(key, value, method = 'pushState') {
+    const next = new URL(location.href);
+    if (value) next.searchParams.set(key, value);
+    else next.searchParams.delete(key);
+    if (next.href !== location.href) history[method](history.state, '', next);
+  }
   let selectedIds=[],returnFocus=null,returnSelectionIndex=-1,dialogSwatchId=null,catalogReady=false,submitting=false,pendingRequest=null;
   const dialog=$('#swatch-dialog'),form=$('#inquiry-form');
   const element=(tag,className,text)=>{const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=t(text);return node;};
@@ -25,50 +45,134 @@
   function announce(message){setText('#selection-announcement',message);}
   try{const stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(stored))selectedIds=[...new Set(stored.filter(id=>typeof id==='string'))].slice(0,24);}catch{/* Local preferences are optional. */}
   function saveSelection(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(selectedIds));}catch{announce('选样清单已更新；当前浏览器无法保存，关闭页面后可能丢失。');}}
-  function setProduct(id){
-    if(!$('#product-panel'))return;
-    const product=products.find(item=>item.id===id);if(!product)return;activeProduct=id;
-    $$('.product-tabs button').forEach(button=>{const active=button.dataset.product===id;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;});
-    $('#product-panel').setAttribute('aria-labelledby','tab-'+id);
-    if(allowedAsset(product.image))$('#product-image').src=assetPath(product.image);
-    $('#product-image').alt=t(product.alt);$('#product-title').textContent=t(product.title);$('#product-kicker').textContent=t(product.kicker);$('#product-description').textContent=t(product.description);
-    $('#product-details').replaceChildren(...product.details.map(([label,value])=>{const row=element('div');row.append(element('dt','',label),element('dd','',value));return row;}));
-    const link=$('#product-action');link.removeAttribute('target');link.removeAttribute('rel');delete link.dataset.document;delete link.dataset.documentPage;
-    link.replaceChildren(document.createTextNode(t(product.actionLabel+' ')),element('span','','→'));
-    if(product.action.startsWith('#'))link.href=({'#finishes':"/keep/finishes/",'#contact':"/keep/#inquiry",'#collections':"/keep/products/",'#spaces':"/keep/spaces/",'#quality':"/keep/quality/"})[product.action]||"/keep/products/";
-    else{link.href=allowedAction(product.action)?assetPath(product.action):"/keep/documents/product-catalog.pdf";const documents={'fire-report':'fire','formaldehyde-report':'formaldehyde','product-catalog':'product','finish-catalog':'finish'};const match=Object.entries(documents).find(([name])=>product.action.includes(name+'.pdf'));if(match)link.dataset.document=match[1];const page=product.action.match(/#page=(\d+)/);if(page)link.dataset.documentPage=page[1];}
-
+  function renderProductImage(product) {
+    const sample = samples[product.id];
+    const showingSample = sample && productView === 'sample';
+    const image = $('#product-image');
+    image.src = assetPath(showingSample ? sample.image : product.image);
+    image.alt = t(showingSample ? sample.alt : product.alt);
+    const mode = showingSample ? 'sample' : 'application';
+    $('.product-figure').dataset.view = mode;
+    $('.view-switch').hidden = !sample;
+    $$('[data-product-view]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.productView === mode));
+    });
   }
-  function renderProducts(){
-    const tablist=$('.product-tabs');if(!tablist)return;tablist.replaceChildren(...products.map((product,index)=>{const b=element('button','',product.title);b.type='button';b.id='tab-'+product.id;b.dataset.product=product.id;b.setAttribute('role','tab');b.setAttribute('aria-controls','product-panel');b.setAttribute('aria-selected','false');b.tabIndex=-1;return b;}));
-    tablist.hidden=!products.length;$('#product-panel').hidden=!products.length;$('#products-empty').hidden=!!products.length;
-    setProduct(products.some(p=>p.id===activeProduct)?activeProduct:products[0]?.id);
+  function setProduct(id) {
+    const panel = $('#product-panel');
+    const product = products.find(item => item.id === id);
+    if (!panel || !product) return;
+    activeProduct = id;
+    $$('.product-tabs button').forEach(button => {
+      const active = button.dataset.product === id;
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    panel.setAttribute('aria-labelledby', 'tab-' + id);
+    renderProductImage(product);
+    setText('#product-title', product.title);
+    setText('#product-description', product.description);
+    $('#product-details').replaceChildren(...product.details.map(([label,value]) => {
+      const row = element('div');
+      row.append(element('dt','',label),element('dd','',value));
+      return row;
+    }));
+    const enquiry = new URL("/keep/#inquiry", location.origin);
+    enquiry.searchParams.set('product', id);
+    $('#product-enquire').href = enquiry.href;
+    const link = $('#product-action');
+    delete link.dataset.document;
+    delete link.dataset.documentPage;
+    link.dataset.i18n = product.actionLabel;
+    link.textContent = t(product.actionLabel);
+    if (product.action.startsWith('#')) {
+      link.href = ({'#finishes':"/keep/finishes/",'#contact':"/keep/#inquiry",'#collections':"/keep/products/",'#spaces':"/keep/spaces/",'#quality':"/keep/quality/"})[product.action] || "/keep/products/";
+    } else {
+      link.href = allowedAction(product.action) ? assetPath(product.action) : "/keep/documents/product-catalog.pdf";
+      const documents = {'fire-report':'fire','formaldehyde-report':'formaldehyde','product-catalog':'product','finish-catalog':'finish'};
+      const match = Object.entries(documents).find(([name]) => product.action.includes(name + '.pdf'));
+      if (match) link.dataset.document = match[1];
+      const page = product.action.match(/#page=(\d+)/);
+      if (page) link.dataset.documentPage = page[1];
+    }
   }
-  function renderProductPreviews(){
-    const grid=$('#product-preview-grid');if(!grid)return;
-    const materialImages={
-      spc:{image:'assets/material-spc-stack.jpg',alt:'SPC 石晶墙板叠层与板材边缘细节',label:'SPC WALL PANEL'},
-      carbon:{image:'assets/material-carbon-samples.jpg',alt:'木纹碳晶板扇形样板，展示饰面与基材',label:'CARBON CRYSTAL BOARD'},
-      grille:{image:'assets/material-grille-samples.jpg',alt:'多种木色格栅样块与凹凸截面',label:'GRILLE & WALL PANEL'},
-      art:{image:'assets/material-acoustic-sample.jpg',alt:'艺术装饰吸音板样块，展示木条与黑色底板结构',label:'ACOUSTIC PANEL'}
-    };
-    grid.replaceChildren(...products.map(product=>{const material=materialImages[product.id],link=element('a','product-preview-card');link.href="/keep/products/?series="+encodeURIComponent(product.id);const image=element('img');image.src=assetPath(material?.image||product.image);image.alt=t(material?.alt||product.alt);image.loading='lazy';image.width=800;image.height=800;const copy=element('div');copy.append(element('p','eyebrow',material?.label||product.kicker),element('h3','',product.title),element('span','preview-arrow','↗'));link.append(image,copy);return link;}));
-    if(!products.length)grid.append(element('p','empty-state','产品资料正在整理中，可前往产品中心查看完整画册。'));
+  function renderProducts() {
+    const tablist = $('.product-tabs');
+    if (!tablist) return;
+    const focusedProduct = tablist.contains(document.activeElement) ? document.activeElement.dataset.product : null;
+    tablist.replaceChildren(...products.map(product => {
+      const short = fallbackProducts[product.id]?.title === product.title && samples[product.id]?.tab;
+      const button = element('button','',short || product.title);
+      button.type = 'button';
+      button.id = 'tab-' + product.id;
+      button.dataset.product = product.id;
+      button.setAttribute('role','tab');
+      button.setAttribute('aria-controls','product-panel');
+      return button;
+    }));
+    tablist.hidden = !products.length;
+    $('#product-panel').hidden = !products.length;
+    $('#products-empty').hidden = !!products.length;
+    setProduct(products.some(p => p.id === activeProduct) ? activeProduct : products[0]?.id);
+    if (focusedProduct) document.getElementById('tab-' + focusedProduct)?.focus({preventScroll:true});
   }
-  $('.product-tabs')?.addEventListener('click',event=>{const b=event.target.closest('button[data-product]');if(b)setProduct(b.dataset.product);});
-  $('.product-tabs')?.addEventListener('keydown',event=>{
-    const tabs=$$('.product-tabs button'),index=tabs.indexOf(event.target);if(index<0)return;let next;
-    if(event.key==='ArrowRight')next=(index+1)%tabs.length;if(event.key==='ArrowLeft')next=(index-1+tabs.length)%tabs.length;if(event.key==='Home')next=0;if(event.key==='End')next=tabs.length-1;
-    if(next!==undefined){event.preventDefault();tabs[next].focus();setProduct(tabs[next].dataset.product);}
+  function renderProductPreviews() {
+    const grid = $('#product-preview-grid');
+    if (!grid) return;
+    grid.replaceChildren(...products.map(product => {
+      const sample = samples[product.id];
+      const card = element('a', 'product-preview-card');
+      card.href = "/keep/products/?series=" + encodeURIComponent(product.id);
+      const frame = element('div','product-preview-image');
+      const img = element('img');
+      img.src = assetPath(sample?.studio || sample?.image || product.image);
+      if (sample?.studio) img.className = 'studio-preview';
+      img.alt = t(sample?.studio ? '基于画册样图制作的'+product.title+'产品展示图' : sample?.alt || product.alt);
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 640;
+      img.height = 640;
+      frame.append(img);
+      card.append(frame, element('h3','',product.title));
+      if (sample) card.append(element('p','',sample.detail));
+      return card;
+    }));
+    if (!products.length) grid.append(element('p','empty-state','产品资料正在整理中，可前往产品中心查看完整画册。'));
+  }
+  $('.product-tabs')?.addEventListener('click', event => {
+    const button = event.target.closest('[data-product]');
+    if (button) {
+      setProduct(button.dataset.product);
+      rememberChoice('series', activeProduct);
+    }
+  });
+  $('.product-tabs')?.addEventListener('keydown', event => {
+    const tabs = $$('.product-tabs button');
+    const index = tabs.indexOf(event.target);
+    if (index < 0) return;
+    const keys = {ArrowRight:(index+1)%tabs.length, ArrowLeft:(index+tabs.length-1)%tabs.length, Home:0, End:tabs.length-1};
+    if (!Object.hasOwn(keys,event.key)) return;
+    event.preventDefault();
+    const tab = tabs[keys[event.key]];
+    tab.focus();
+    setProduct(tab.dataset.product);
+    rememberChoice('series', activeProduct, 'replaceState');
+  });
+  $('.view-switch')?.addEventListener('click', event => {
+    const button = event.target.closest('[data-product-view]');
+    const product = products.find(item => item.id === activeProduct);
+    if (!button || !product) return;
+    productView = button.dataset.productView;
+    renderProductImage(product);
   });
   function updateDialogSelection(){
     const s=swatches.find(item=>item.id===dialogSwatchId),b=$('#dialog-select'),chosen=selectedIds.includes(dialogSwatchId);if(!b)return;
-    b.disabled=!s||submitting;b.setAttribute('aria-pressed',String(chosen));b.replaceChildren(document.createTextNode(t(chosen?'从选样中移除 ':'加入选样 ')),element('span','',chosen?'−':'+'));
+    b.disabled=!s||submitting;b.setAttribute('aria-pressed',String(chosen));b.textContent=t(chosen?'移除所选花色':'收藏此花色');
   }
   function openSwatch(swatch,trigger){
     if(!dialog)return;
     returnFocus=trigger;returnSelectionIndex=$$('.selection-preview').indexOf(trigger);dialogSwatchId=swatch.id;$('#dialog-image').src=assetPath(swatch.image);$('#dialog-image').alt=t(swatch.name+'饰面纹理');$('#dialog-title').textContent=t(swatch.name);
-    $('#dialog-category').textContent=t((categories[swatch.category]||'饰面花色')+' / FINISH DETAIL');$('#dialog-code').textContent=t(swatch.code?'花色编号 '+swatch.code:'画册原名 · '+swatch.name);
+    $('#dialog-category').textContent=t(categories[swatch.category]||'饰面花色');$('#dialog-code').textContent=t(swatch.code?'花色编号 '+swatch.code:'画册原名 · '+swatch.name);
     $('#dialog-source').textContent=t('PDF 第 '+swatch.page+' 页');$('.dialog-catalog-link').href="/keep/documents/finish-catalog.pdf#page="+swatch.page;$('.dialog-catalog-link').dataset.document='finish';$('.dialog-catalog-link').dataset.documentPage=String(swatch.page);updateDialogSelection();dialog.showModal();document.body.style.overflow='hidden';
   }
   function toggleSelection(id){
@@ -80,20 +184,74 @@
   function renderSwatches(){
     if(!$('#swatch-grid'))return;
     const matching=swatches.filter(s=>activeFilter==='all'||s.category===activeFilter);
-    const visible=matching;
-    $('#swatch-grid').replaceChildren(...visible.map((s,index)=>{
-      const card=element('article','swatch-card');card.style.animationDelay=(index%4)*.035+'s';const open=element('button','swatch-open');open.type='button';open.setAttribute('aria-label',t('查看'+s.name+'花色详情'));
-      const figure=element('div','swatch-image'),img=element('img');img.src=assetPath(s.image);img.alt=t(s.name+'饰面纹理');img.loading='lazy';img.width=600;img.height=750;
-      const zoom=element('span','swatch-zoom','↗');zoom.setAttribute('aria-hidden','true');figure.append(img,zoom);
-      const info=element('div','swatch-info');info.append(element('h3','',s.name),element('span','',categories[s.category]));open.append(figure,info,element('p','swatch-code','SPC / '+(s.code||'SURFACE COLLECTION')));open.addEventListener('click',()=>openSwatch(s,open));
-      const select=element('button','swatch-select');select.type='button';select.dataset.selectId=s.id;select.addEventListener('click',()=>toggleSelection(s.id));card.append(open,select);return card;
+    $('#swatch-grid').replaceChildren(...matching.map(swatch => {
+      const card = element('article','swatch-card');
+      const open = element('button','swatch-open');
+      open.type = 'button';
+      open.setAttribute('aria-label', t('查看'+swatch.name+'花色详情'));
+      const figure = element('div','swatch-image');
+      const img = element('img');
+      img.src = assetPath(swatch.image);
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 600;
+      img.height = 750;
+      figure.append(img);
+      const info = element('div','swatch-info');
+      info.append(element('h3','',swatch.name), element('span','',categories[swatch.category]));
+      open.append(figure,info);
+      open.addEventListener('click', () => openSwatch(swatch,open));
+      const select = element('button','swatch-select');
+      select.type = 'button';
+      select.dataset.selectId = swatch.id;
+      select.addEventListener('click', () => toggleSelection(swatch.id));
+      card.append(open,select);
+      return card;
     }));
     $('#finish-count').textContent=t(matching.length+' 款花色');$('#finishes-empty').hidden=matching.length>0;$('#swatch-grid').hidden=matching.length===0;
     updateSelectionButtons();
   }
   function updateSelectionButtons(){
-    $$('[data-select-id]').forEach(button=>{const chosen=selectedIds.includes(button.dataset.selectId);button.classList.toggle('is-selected',chosen);button.setAttribute('aria-pressed',String(chosen));button.textContent=t(chosen?'✓ 已选 · 移除':'+ 加入选样');button.disabled=submitting;});updateDialogSelection();
+    $$('[data-select-id]').forEach(button => {
+      const id = button.dataset.selectId;
+      const chosen = selectedIds.includes(id);
+      const name = swatches.find(item => item.id === id)?.name || '';
+      button.setAttribute('aria-pressed', String(chosen));
+      button.textContent = chosen ? '✓' : '+';
+      button.title = t(chosen ? '移除所选花色' : '收藏此花色');
+      button.setAttribute('aria-label', t(chosen ? '移除所选花色' : '收藏此花色') + ' · ' + t(name));
+      button.disabled = submitting;
+    });
+    updateDialogSelection();
   }
+
+  function setFilter(value) {
+    activeFilter = value;
+    $$('.filter-group button').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.filter === value));
+    });
+    renderSwatches();
+  }
+  function syncLocation() {
+    if ($('#product-panel')) setProduct(products.find(item => item.id === queryValue('series'))?.id || products[0]?.id);
+    if ($('#swatch-grid')) setFilter(textureFromUrl());
+    updateSelection();
+  }
+  window.addEventListener('popstate', syncLocation);
+  window.addEventListener('pageshow', event => { if (event.persisted) refreshSavedSelection(); });
+  window.addEventListener('storage', event => {
+    if (event.key === STORAGE_KEY || event.key === null) refreshSavedSelection();
+  });
+  function refreshSavedSelection() {
+    try {
+      const next = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (Array.isArray(next)) selectedIds = [...new Set(next.filter(id => typeof id === 'string'))].slice(0,24);
+    } catch { /* Keep the current selection if storage is unavailable. */ }
+    syncLocation();
+  }
+  window.SoyaGetSelectedFinishes = () => selectedSwatches().map(({id,name,code}) => ({id,name,code}));
+  window.SoyaGetInquiryProduct = () => products.find(item => item.id === queryValue('product'))?.title || '';
   function updateSelection(){
     const chosen=selectedSwatches();window.dispatchEvent(new CustomEvent('soya:selectionchange'));$$('[data-selection-count]').forEach(node=>node.textContent=t(String(chosen.length)));
     const dock=$('#selection-dock');if(dock)dock.hidden=!chosen.length;
@@ -102,12 +260,22 @@
     if($('#selection-items')){
       setText('#selection-total',chosen.length+' / 24');$('#selection-empty').hidden=chosen.length>0;$('#selection-clear').hidden=chosen.length===0;$('#selection-clear').disabled=submitting;
       $('#selection-items').replaceChildren(...chosen.map(s=>{const item=element('div','selection-item'),open=element('button','selection-preview');open.type='button';const img=element('img');img.src=assetPath(s.image);img.alt=t('');img.loading='lazy';open.append(img,element('span','',s.name));open.setAttribute('aria-label',t('查看已选花色 '+s.name));open.addEventListener('click',()=>openSwatch(s,open));const remove=element('button','selection-remove','×');remove.type='button';remove.disabled=submitting;remove.setAttribute('aria-label',t('移除 '+s.name));remove.addEventListener('click',()=>{const prior=chosen.indexOf(s);toggleSelection(s.id);const remaining=$$('.selection-remove');(remaining[Math.min(prior,remaining.length-1)]||$('.selection-shortcut'))?.focus();});item.append(open,remove);return item;}));
-      setText('#selection-summary',chosen.length?'已选 '+chosen.length+' 款花色，将随商务询盘一并提交。':'可选最多 24 款，也可直接咨询产品。');
+      setText('#selection-summary',chosen.length?'您的选样保存在此设备。':'可选最多 24 款，也可直接咨询产品。');
     }
     updateSelectionButtons();
   }
-  $$('.filter-group button').forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;$$('.filter-group button').forEach(b=>{const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderSwatches();}));
-  $('#reset-filters')?.addEventListener('click',()=>{activeFilter='all';$$('.filter-group button').forEach(button=>{const active=button.dataset.filter==='all';button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});renderSwatches();$('.filter-group button').focus();announce('已显示全部花色。');});
+  $('.filter-group')?.addEventListener('click', event => {
+    const button = event.target.closest('[data-filter]');
+    if (!button) return;
+    setFilter(button.dataset.filter);
+    rememberChoice('texture', activeFilter === 'all' ? null : activeFilter);
+  });
+  $('#reset-filters')?.addEventListener('click', () => {
+    setFilter('all');
+    rememberChoice('texture', null);
+    $('.filter-group button').focus();
+    announce('已显示全部花色。');
+  });
   $('#selection-clear')?.addEventListener('click',()=>{if(submitting)return;selectedIds=[];saveSelection();updateSelection();$('.selection-shortcut').focus();announce('选样清单已清空。');});
   $('#dialog-select')?.addEventListener('click',()=>toggleSelection(dialogSwatchId));
   $('.dialog-close')?.addEventListener('click',()=>dialog.close());
@@ -117,10 +285,10 @@
     try{const parsed=new URL(value||''),base=key+'.com';const validHost=key==='whatsapp'?['wa.me','api.whatsapp.com'].includes(parsed.hostname):(parsed.hostname===base||parsed.hostname.endsWith('.'+base));return parsed.protocol==='https:'&&!parsed.username&&!parsed.password&&!parsed.port&&validHost?parsed.href:null;}catch{return null;}
   }
   function applySettings(settings){
-    $$('.brand-cn').forEach(node=>node.textContent=String(settings.brandName));$$('[data-brand-name]').forEach(node=>node.textContent=t(settings.brandName));$('.header .brand')?.setAttribute('aria-label',t(settings.brandName+' 首页'));document.title=t(settings.brandName+' · '+(document.body.dataset.pageTitle||settings.heroTitle));setText('#hero-title',settings.heroTitle);setText('.hero-subtitle',settings.heroSubtitle);
+    $$('.brand-cn').forEach(node=>node.textContent=String(settings.brandName));$$('[data-brand-name]').forEach(node=>node.textContent=t(settings.brandName));$('.header .brand')?.setAttribute('aria-label',t(settings.brandName+' 首页'));document.title=t(settings.brandName+' · '+(document.body.dataset.pageTitle||settings.heroTitle));setText('[data-site-hero-title]',settings.heroTitle);
     const email=$('#contact-email');if(email){email.replaceChildren();if(settings.email){const link=element('a','',settings.email);link.href='mailto:'+settings.email;email.append(link);email.setAttribute('aria-label',t('商务邮箱'));}else{email.textContent=t('—');email.setAttribute('aria-label',t('邮箱待补充'));}}
     const names={facebook:'Facebook',tiktok:'TikTok',whatsapp:'WhatsApp'};let anySocial=false;
-    const socials=$('#contact-socials');if(socials){socials.replaceChildren(...Object.entries(names).map(([key,label])=>{const url=safeSocialUrl(settings.socials?.[key],key),node=element(url?'a':'span','',label);node.append(element('i','',url?'↗':'—'));if(url){anySocial=true;node.href=url;node.target='_blank';node.rel='noopener noreferrer';node.setAttribute('aria-label',t(label+'（新窗口）'));}return node;}));socials.setAttribute('aria-label',t(anySocial?'社媒账号':'社媒账号待补充'));}
+    const socials=$('#contact-socials');if(socials){socials.replaceChildren(...Object.entries(names).map(([key,label])=>{const url=safeSocialUrl(settings.socials?.[key],key),node=element(url?'a':'span','',label);if(url){anySocial=true;node.href=url;node.target='_blank';node.rel='noopener noreferrer';node.setAttribute('aria-label',t(label+'（新窗口）'));}return node;}));socials.setAttribute('aria-label',t(anySocial?'社媒账号':'社媒账号待补充'));}
   }
   async function fetchJSON(url,options={}){
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
@@ -140,15 +308,13 @@
   $('#catalog-retry')?.addEventListener('click',loadCatalog);
   $('#inquiry-catalog-retry')?.addEventListener('click',loadCatalog);
   const menu=$('.menu-toggle'),mobileNav=$('#mobile-nav');
-  function closeMenu(){menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('打开导航'));mobileNav.hidden=true;document.body.classList.remove('nav-open');}
-  menu.addEventListener('click',()=>{const opening=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(opening));menu.setAttribute('aria-label',t(opening?'关闭导航':'打开导航'));mobileNav.hidden=!opening;document.body.classList.toggle('nav-open',opening);if(opening){mobileNav.scrollTop=0;mobileNav.querySelector('a').focus();}});
+  function closeMenu(){menu.setAttribute('aria-expanded','false');menu.dataset.i18nAriaLabel='打开导航';menu.setAttribute('aria-label',t('打开导航'));mobileNav.hidden=true;document.body.classList.remove('nav-open');}
+  menu.addEventListener('click',()=>{const opening=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(opening));menu.dataset.i18nAriaLabel=opening?'关闭导航':'打开导航';menu.setAttribute('aria-label',t(menu.dataset.i18nAriaLabel));mobileNav.hidden=!opening;document.body.classList.toggle('nav-open',opening);if(opening){mobileNav.scrollTop=0;mobileNav.querySelector('a').focus();}});
   $$('#mobile-nav a').forEach(link=>link.addEventListener('click',closeMenu));
   document.addEventListener('keydown',event=>{if(menu.getAttribute('aria-expanded')!=='true')return;if(event.key==='Escape'){closeMenu();menu.focus();}if(event.key==='Tab'){const links=[menu,...$$('#mobile-nav a')],first=links[0],last=links[links.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}});
   document.addEventListener('click',event=>{if(menu.getAttribute('aria-expanded')==='true'&&!mobileNav.contains(event.target)&&!menu.contains(event.target))closeMenu();});
   matchMedia('(min-width: 801px)').addEventListener('change',event=>{if(event.matches)closeMenu();});$('#year').textContent=t(new Date().getFullYear());
   if($('#selection-dock')&&'IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{document.body.classList.toggle('selection-in-view',entries.some(entry=>entry.isIntersecting));},{rootMargin:'0px 0px -90px 0px'});observer.observe($('#selection'));}
-  if('IntersectionObserver'in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.08});$$('.intro-grid,.section-head,.inspiration-grid,.downloads,.footer-heading').forEach(e=>{e.classList.add('reveal');observer.observe(e);});}
-  window.addEventListener('soya:languagechange',()=>{const node=$('#success-time');if(node?.dataset.createdAt){const date=new Date(node.dataset.createdAt);if(!Number.isNaN(date.getTime()))node.textContent=date.toLocaleString(window.SoyaI18n.locale);}});
-  window.SoyaGetSelectedFinishes=()=>selectedSwatches().map(({id,name,code})=>({id,name,code}));
-  renderProducts();renderProductPreviews();renderSwatches();updateSelection();loadCatalog();
+  window.addEventListener('soya:languagechange',()=>{setProduct(activeProduct);updateSelection();const node=$('#success-time');if(node?.dataset.createdAt){const date=new Date(node.dataset.createdAt);if(!Number.isNaN(date.getTime()))node.textContent=date.toLocaleString(window.SoyaI18n.locale);}});
+  renderProducts();renderProductPreviews();setFilter(activeFilter);updateSelection();loadCatalog();
 })();
