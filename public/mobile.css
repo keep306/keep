@@ -1,0 +1,161 @@
+/* Phone layout: a consistent scale across the English and Chinese pages. */
+@media (max-width: 600px) {
+  :root { --mobile-gutter: clamp(16px, 5vw, 24px); }
+  html { scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+  .section-wrap { padding-inline: var(--mobile-gutter); }
+  .button { height: auto; min-height: 48px; max-width: 100%; padding-block: 12px; font-size: 14px; line-height: 1.4; white-space: normal; }
+  .header { height: 68px; padding-inline: var(--mobile-gutter); }
+  .header .brand { gap: 8px; max-width: none; min-width: 0; }
+  .header .brand-mark { width: 29px; height: 35px; }
+  .header .brand-cn, html[lang=en] .header .brand-cn { font-size: 20px; letter-spacing: 3px; max-width: none; }
+  .header .brand-en { font-size: 7px; letter-spacing: .85px; }
+  .header .nav-end { gap: 6px; flex-shrink: 0; }
+  .language-switch { gap: 2px; }
+  .language-switch button { min-width: 31px; min-height: 44px; font-size: 12px; padding-inline: 3px; }
+  .header .menu-toggle { width: 44px; height: 44px; padding: 0; }
+  .mobile-nav { top: 68px; max-height: calc(100dvh - 68px); padding: 12px var(--mobile-gutter) calc(20px + env(safe-area-inset-bottom)); }
+  .mobile-nav a { font-size: 18px; line-height: 1.4; padding-block: 14px; min-height: 52px; }
+
+  .sample-carousel__media { aspect-ratio: 4 / 3; }
+  .sample-carousel__slide img { inset: 0; width: 100%; max-width: 100%; height: 100%; object-fit: cover; object-position: right center; }
+  .sample-carousel__slide img.is-fallback { object-fit: contain; padding: 16px; }
+  .sample-carousel__body { padding: 24px var(--mobile-gutter) 20px; }
+  .sample-carousel__copy, html[lang=en] .sample-carousel__copy { width: 100%; max-width: none; }
+  .sample-carousel__eyebrow { font-size: 11px; letter-spacing: .9px; }
+  .sample-carousel h1, html[lang=en] .sample-carousel h1 { font-size: clamp(28px, 8.2vw, 34px); line-height: 1.16; letter-spacing: -.6px; margin: 14px 0; max-width: none; text-wrap: balance; }
+  html[lang=zh-CN] .sample-carousel h1 { line-height: 1.35; letter-spacing: 0; }
+  .sample-carousel .hero-subtitle, html[lang=en] .sample-carousel .hero-subtitle { font-size: 14px; line-height: 1.65; max-width: none; }
+  .sample-carousel__description, html[lang=en] .sample-carousel__description { font-size: 15px; line-height: 1.65; margin-top: 12px; }
+  .sample-carousel__description br { display: none; }
+  .sample-carousel__actions, html[lang=en] .sample-carousel__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+  .sample-carousel__actions .button, html[lang=en] .sample-carousel__actions .button { width: 100%; min-width: 0; min-height: 48px; font-size: 13px; line-height: 1.35; padding: 11px 12px; gap: 8px; letter-spacing: 0; }
+  .sample-carousel__actions .button span, html[lang=en] .sample-carousel__actions .button span { margin-left: 0; }
+  .sample-carousel__catalog { font-size: 13px; line-height: 1.5; padding-block: 12px; margin-top: 6px; gap: 16px; }
+  .sample-carousel__bottom { margin-inline: var(--mobile-gutter); padding: 16px 0 20px; gap: 10px; }
+  .sample-carousel__series { gap: 12px; }
+  .sample-carousel__series-label, html[lang=en] .sample-carousel__series-label { font-size: 10px; letter-spacing: .5px; }
+  .sample-carousel__series-link { font-size: 14px; gap: 12px; }
+  .sample-carousel__caption, html[lang=en] .sample-carousel__caption { font-size: 12px; line-height: 1.5; }
+
+  .section-head, html[lang=en] .section-head { flex-direction: column; align-items: flex-start; gap: 14px; margin-bottom: 26px; }
+  .section-head .eyebrow, .page-intro .eyebrow, .footer-main .eyebrow { font-size: 12px; letter-spacing: 1px; margin-bottom: 12px; }
+  .section-head h2, .home-material-finishes h2, body[data-page=home] .home-products h2, .home-quality h2, .downloads h2 { font-size: 28px; line-height: 1.25; letter-spacing: -.5px; }
+  html[lang=en] .section-head > .text-link { font-size: 14px; }
+  .page-intro { padding-top: 36px; padding-bottom: 30px; }
+  .page-intro h1, html[lang=en] .page-intro h1 { font-size: clamp(29px, 8vw, 34px); line-height: 1.2; margin: 16px 0; letter-spacing: -.5px; }
+  .page-intro-description, html[lang=en] .page-intro-description { font-size: 16px; line-height: 1.7; }
+  body[data-page=home] .home-products, .home-material-finishes, .home-quality, .product-guides, .downloads { padding-top: 48px; padding-bottom: 48px; }
+  .home-quality, .product-guides, .downloads, .footer-main, .quality-grid, .space-story-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+
+  .product-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 12px; }
+  .product-preview-card { display: flex; flex-direction: column; }
+  .product-preview-card > img, body[data-page=home] .product-preview-card > img { height: auto; aspect-ratio: 4 / 5; object-fit: contain; padding: 12px; background: #fff; }
+  .product-preview-card > div, html[lang=en] .product-preview-card > div, body[data-page=home] .product-preview-card > div { flex: 1; min-height: 0; padding: 16px 20px 18px 0; }
+  .product-preview-card h3, html[lang=en] .product-preview-card h3, body[data-page=home] .product-preview-card h3 { font-size: 16px; line-height: 1.4; margin-top: 8px; padding-right: 0; }
+  .product-preview-card .eyebrow, html[lang=en] .product-preview-card .eyebrow, body[data-page=home] .product-preview-card .eyebrow { font-size: 11px; letter-spacing: .2px; line-height: 1.5; }
+  .product-preview-card .preview-arrow, html[lang=en] .product-preview-card .preview-arrow { bottom: 18px; }
+  .preview-note, body[data-page=home] .preview-note { font-size: 14px; line-height: 1.7; }
+  .material-finish-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+  .material-finish img { height: auto; aspect-ratio: 4 / 5; }
+  .material-finish > span { padding-block: 13px; }
+  .material-finish strong { font-size: 18px; }
+  .material-finish > span > span { font-size: 11px; }
+  .material-finish-footnote { flex-direction: column; gap: 16px; font-size: 14px; line-height: 1.7; }
+  .product-tabs, html[lang=en] .product-tabs { margin-inline: var(--mobile-gutter); gap: 24px; }
+  .product-tabs button, html[lang=en] .product-tabs button { font-size: 14px; min-height: 48px; padding-block: 14px; }
+  .product-image-wrap { min-height: 0; aspect-ratio: 4 / 3; }
+  .product-copy { padding: 28px var(--mobile-gutter) 32px; }
+  .product-copy h3 { font-size: 28px; line-height: 1.25; }
+  .product-copy > p:not(.eyebrow), .product-guides p:not(.eyebrow) { font-size: 16px; line-height: 1.75; }
+  .product-details > div, html[lang=en] .product-details > div { font-size: 14px; line-height: 1.65; gap: 16px; }
+  .product-details dt, .product-details dd { min-width: 0; overflow-wrap: anywhere; }
+  .product-copy .button { min-width: 0; max-width: 100%; font-size: 14px; }
+  .guide-links a, html[lang=en] .guide-links a { font-size: 14px; }
+
+  .finish-selection-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .finish-browse-note, html[lang=en] .finish-browse-note { max-width: none; font-size: 14px; line-height: 1.65; }
+  .finish-selection-row .selection-shortcut { align-self: flex-end; font-size: 14px; min-height: 44px; padding-block: 10px; }
+  .filter-group, html[lang=en] .filter-group { gap: 24px; }
+  .filter-group button, html[lang=en] .filter-group button { font-size: 14px; min-height: 48px; }
+  .swatch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+  .swatch-image { height: auto; aspect-ratio: 3 / 4; }
+  .swatch-info h3 { font-size: 16px; }
+  .swatch-code { font-size: 13px; }
+  .swatch-select { min-height: 44px; font-size: 14px; }
+  .selection-panel { padding: 22px 16px; scroll-margin-top: 84px; }
+  .selection-heading { gap: 14px; flex-wrap: wrap; }
+  .selection-heading > div { min-width: 0; flex: 1 1 180px; }
+  .selection-heading h3, html[lang=en] .selection-heading h3 { font-size: 22px; line-height: 1.35; }
+  .selection-heading > div > p:last-child, html[lang=en] .selection-heading > div > p:last-child, .selection-bottom p { font-size: 14px; line-height: 1.7; }
+  .selection-heading .quiet-button { font-size: 13px; min-height: 44px; margin-top: 0; }
+  .selection-bottom { flex-direction: column; align-items: stretch; gap: 16px; }
+  .selection-bottom .button { width: 100%; min-width: 0; }
+  .selection-dock, html[lang=en] .selection-dock { left: 0; right: 0; bottom: 0; transform: none; min-width: 0; max-width: none; gap: 12px; padding: 10px var(--mobile-gutter) calc(10px + env(safe-area-inset-bottom)); }
+  .selection-dock .dock-summary, html[lang=en] .selection-dock .dock-summary { min-width: 0; font-size: 13px; white-space: normal; }
+  .selection-dock .button, html[lang=en] .selection-dock .button { flex: 0 1 55%; min-width: 0; min-height: 48px; font-size: 14px; line-height: 1.35; white-space: normal; padding: 10px 12px; gap: 6px; }
+  .selection-dock .button > .i18n-inline { min-width: 0; }
+  html[lang=en] .selection-dock .button span { margin-left: 0; }
+  .has-selection-dock { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+
+  #swatch-dialog { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+  .dialog-layout { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .dialog-layout > img { height: min(38svh, 300px); min-height: 0; max-height: none; object-fit: contain; background: #e4e5dc; }
+  .dialog-close { width: 44px; height: 44px; top: 8px; right: 8px; }
+  .dialog-copy { padding: 24px; }
+  .dialog-copy h2 { font-size: 27px; }
+  .dialog-copy dl, html[lang=en] .dialog-copy dl, .dialog-catalog-link, html[lang=en] .dialog-catalog-link { font-size: 14px; }
+  .dialog-copy dl > div { gap: 14px; }
+  .dialog-copy dd { min-width: 0; text-align: right; }
+  .dialog-copy .button { min-height: 48px; }
+  .space-feature { height: 74svh; min-height: 480px; max-height: 620px; }
+  .space-copy { left: var(--mobile-gutter); right: var(--mobile-gutter); top: 50%; }
+  .space-copy h1, html[lang=en] .space-copy h1 { font-size: clamp(30px, 8.2vw, 36px); line-height: 1.2; letter-spacing: -.5px; }
+  .space-copy > p:not(.eyebrow) { font-size: 16px; line-height: 1.7; letter-spacing: 0; }
+  .space-story-grid article > img { height: auto; aspect-ratio: 4 / 3; }
+  .space-story-grid h3, html[lang=en] .space-story-grid h3 { font-size: 23px; line-height: 1.35; }
+  .space-story-grid p { font-size: 16px; line-height: 1.75; }
+
+  .quality { padding-top: 48px; }
+  .quality-grid { gap: 0; }
+  .report-card, .report-card + article { padding: 26px 0; border-left: 0; }
+  .report-card + article { border-top: 1px solid #4b5545; }
+  .report-card h3, html[lang=en] .report-card h3 { font-size: 20px; line-height: 1.4; }
+  .report-value { font-size: 62px; margin: 26px 0 16px; }
+  .report-description, html[lang=en] .report-description { font-size: 16px; line-height: 1.7; min-height: 0; }
+  .quality-note p, html[lang=en] .quality-note p { font-size: 14px; line-height: 1.7; }
+  .home-quality p:not(.eyebrow), .downloads > div:first-child p, html[lang=en] .downloads > div:first-child p { font-size: 16px; line-height: 1.7; }
+  .download-links strong, html[lang=en] .download-links strong { font-size: 16px; line-height: 1.5; }
+  .download-links small { font-size: 12px; line-height: 1.5; letter-spacing: .5px; }
+  .project-cta { flex-direction: column; align-items: stretch; padding-block: 36px; gap: 20px; }
+  .project-cta h2, html[lang=en] .project-cta h2 { font-size: 28px; line-height: 1.25; }
+  .project-cta .button { width: 100%; min-width: 0; }
+
+  .inquiry { padding-block: 48px; gap: 24px; }
+  .inquiry-intro h2, html[lang=en] .inquiry-intro h2 { font-size: 30px; line-height: 1.2; margin: 14px 0 18px; }
+  .inquiry-intro > p:not(.eyebrow), html[lang=en] .inquiry-intro > p:not(.eyebrow) { font-size: 16px; line-height: 1.7; }
+  .inquiry-selection, html[lang=en] .inquiry-selection { margin-top: 22px; padding-block: 16px; font-size: 14px; line-height: 1.7; }
+  .inquiry .whatsapp-composer { padding: 24px 20px; }
+  .inquiry .whatsapp-composer h3 { font-size: 23px; margin-bottom: 22px; }
+  .inquiry .whatsapp-composer textarea { min-height: 140px; line-height: 1.65; }
+  .inquiry .whatsapp-composer .whatsapp-help { font-size: 14px; line-height: 1.7; }
+  .footer-main { padding-block: 48px; gap: 30px; }
+  .footer-heading h2, html[lang=en] .footer-heading h2 { font-size: 32px; line-height: 1.2; }
+  .contact-label { font-size: 13px; }
+  .social-placeholders a { font-size: 14px; min-height: 44px; }
+  .footer-bottom { height: auto; flex-wrap: wrap; padding-block: 24px; gap: 20px; }
+  .footer-pages, html[lang=en] .footer-pages { font-size: 14px; gap: 18px 22px; }
+  .footer-utility, html[lang=en] .footer-utility { font-size: 12px; }
+
+  .document-reader__header { padding: 14px; gap: 10px; }
+  .document-reader__title { font-size: 15px; line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .document-reader__eyebrow { font-size: 10px; letter-spacing: .06em; }
+  .document-reader__header-actions { gap: 8px; }
+  .document-reader__download { font-size: 12px; }
+  .document-reader__button { min-width: 44px; height: 44px; font-size: 14px; }
+  .document-reader__close { font-size: 28px; }
+  .document-reader__page-input { font-size: 16px; height: 44px; width: 48px; }
+  .document-reader__page-label { gap: 5px; }
+  .document-reader__zoom-controls { gap: 6px; }
+  .document-reader__zoom-controls .document-reader__button { padding-inline: 8px; }
+  .document-reader__footer { padding-bottom: calc(10px + env(safe-area-inset-bottom)); font-size: 12px; }
+}
