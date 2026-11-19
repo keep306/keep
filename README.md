@@ -2,7 +2,7 @@
 
 源码仓库：[keep306/keep](https://github.com/keep306/keep)。`main` 保留完整前后台源码；`gh-pages` 是可供 GitHub Pages 发布的静态官网。原 ChatGPT Sites 地址出现托管层 403，公开官网改用 GitHub Pages。
 
-GitHub Pages 目标地址：[众诚合](https://keep306.github.io/keep/)。需先由仓库管理员在 Settings → Pages 开启，设置如下；未开启或部署未成功前，此地址不是已上线声明。
+GitHub Pages 公开官网：[众诚合](https://keep306.github.io/keep/)。2026-11-19 首次部署成功；五个页面及关键运行文件已从公网获取并与本机导出逐字节核对。
 
 ## GitHub Pages 公开版
 
@@ -11,7 +11,7 @@ GitHub Pages 目标地址：[众诚合](https://keep306.github.io/keep/)。需�
 - 选样保存在访客本机；需求说明及花色编号带入 WhatsApp，由访客确认发送。
 - 不部署 `/admin`、在线询盘接口或数据库，不会显示虚假的“提交成功”。原后台源码及原数据库不会被静态导出修改。
 
-首次开启：进入 [仓库 Pages 设置](https://github.com/keep306/keep/settings/pages)，Source 选择 **Deploy from a branch**，Branch 选择 **gh-pages**，目录选择 **/ (root)**，保存。GitHub 完成 Pages build and deployment 后再检查目标地址。
+当前发布分支为 `gh-pages`。如需重新配置：进入 [仓库 Pages 设置](https://github.com/keep306/keep/settings/pages)，Source 选择 **Deploy from a branch**，Branch 选择 **gh-pages**，目录选择 **/ (root)**，保存。GitHub 完成 Pages build and deployment 后再检查公开地址。
 
 导出命令：`npm ci` 后运行 `npm run build:pages`，产物为被 Git 忽略的 `out/`。默认部署路径 `/keep`，其他仓库路径可用 `PAGES_BASE_PATH` 指定。`npm test` 包括静态资源路径、完整资料、WhatsApp选样和原后端测试。
 
