@@ -1,8 +1,25 @@
 # 众诚合 · 产品展示与管理网站
 
-源码仓库：[keep306/keep](https://github.com/keep306/keep)。完整网站使用 Sites / Cloudflare Worker / D1 运行，GitHub 保存可维护的完整源码与产品资料。
+源码仓库：[keep306/keep](https://github.com/keep306/keep)。`main` 保留完整前后台源码；`gh-pages` 是可供 GitHub Pages 发布的静态官网。原 ChatGPT Sites 地址出现托管层 403，公开官网改用 GitHub Pages。
 
-官网：[众诚合](https://zhongchenghe-surfaces.earnestreed8.chatgpt.site/)。管理后台：同一网址的 `/admin`，需管理员登录。
+GitHub Pages 目标地址：[众诚合](https://keep306.github.io/keep/)。需先由仓库管理员在 Settings → Pages 开启，设置如下；未开启或部署未成功前，此地址不是已上线声明。
+
+## GitHub Pages 公开版
+
+- 五个独立页面、5张自动轮播产品图、24款花色、EN/中文切换。
+- 四份完整 PDF 和102页阅读图片，报告仍在页面内打开。
+- 选样保存在访客本机；需求说明及花色编号带入 WhatsApp，由访客确认发送。
+- 不部署 `/admin`、在线询盘接口或数据库，不会显示虚假的“提交成功”。原后台源码及原数据库不会被静态导出修改。
+
+首次开启：进入 [仓库 Pages 设置](https://github.com/keep306/keep/settings/pages)，Source 选择 **Deploy from a branch**，Branch 选择 **gh-pages**，目录选择 **/ (root)**，保存。GitHub 完成 Pages build and deployment 后再检查目标地址。
+
+导出命令：`npm ci` 后运行 `npm run build:pages`，产物为被 Git 忽略的 `out/`。默认部署路径 `/keep`，其他仓库路径可用 `PAGES_BASE_PATH` 指定。`npm test` 包括静态资源路径、完整资料、WhatsApp选样和原后端测试。
+
+发布时将 `out/` 的**内容**更新到 `gh-pages` 分支根目录。保持 `.nojekyll`，不设置旧域名 CNAME。只修改 `main` 或本机后台不会自动更新 `gh-pages`；每次内容变化需重新导出并发布。构建从 `content/` 和 `public/` 读取资料，不读取本机或线上 D1 的后台覆盖值。
+
+## 完整前后台版本（保留）
+
+完整网站使用 Sites / Cloudflare Worker / D1 运行，需要支持服务端的独立托管。以下后台、在线询盘和数据库说明只适用于完整版本，GitHub Pages 不提供这些功能。
 
 前台：独立首页、产品中心、SPC花色库、空间应用、检测资料；24款花色直接展示并按纹理分类，支持本机选样清单、商务询盘和四份完整材料的站内逐页阅读。
 
